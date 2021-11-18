@@ -9,9 +9,10 @@ https://docs.djangoproject.com/en/3.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.2/ref/settings/
 """
-
+# 파이썬 모듈
 from pathlib import Path
 
+# 내가 만든 사용자 모듈
 from my_settings import DATABASES, SECRET_KEY
 
 
