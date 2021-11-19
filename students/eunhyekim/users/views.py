@@ -8,7 +8,6 @@ from users.models     import User
 from django.db        import IntegrityError
 
         
-
 class SignUpView(View):
     def post(self, request):
       
@@ -21,10 +20,10 @@ class SignUpView(View):
             password_validation = re.compile('(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[!@#$%*^&+=])([a-zA-Z0-9!@#$%*^&+=]{8,})')
             
             if not email_validation.match(email):
-                return JsonResponse({},) #함수니까, return이 되면, 함수가 종료
+                return JsonResponse({"MESSAGE":"email_ERROR"}, status = 400) 
             
             if not password_validation.match(password):
-                raise KeyError
+                return JsonResponse({"MESSAGE":"password_ERROR"}, status = 400)
                 
             User.objects.create(
                 name     = data["name"],
@@ -33,7 +32,7 @@ class SignUpView(View):
                 contact  = data["contact"],
             )
 
-            return JsonResponse({"MESSAGE" : "SUCCESS"}, status = 201)
+            return JsonResponse({"MESSAGE":"SUCCESS"}, status = 201)
         
         except IntegrityError:
             return JsonResponse({"user_MESSAGE":"user_ERROR"}, status = 400)
