@@ -25,15 +25,15 @@ class SignUpView(View):
                 return JsonResponse({"message": "EMAIL_ERROR"}, status=400)
             elif re.match(passwd_condition, data["passwd"]) is None:
                 return JsonResponse({"message": "PW_ERROR"}, status=400)
+            else:
+                User.objects.create(
+                name     = data["name"],
+                email    = data["email"],
+                password = data["passwd"],
+                phone    = data["phone"],
+                )
+                return JsonResponse({"message": "Success"}, status = 201)
         except KeyError:
             return JsonResponse({"message": "KEY_ERROR"}, status=400)
         except IntegrityError:
             return JsonResponse({"message": "EMAIL_ERROR"}, status=400)
-        else:
-            User.objects.create(
-            name     = data["name"],
-            email    = data["email"],
-            password = data["passwd"],
-            phone    = data["phone"],
-            )
-            return JsonResponse({"message": "Success"}, status = 201)
