@@ -20,8 +20,8 @@ from .models import User
 class UsersView(View):
     def post(self, request):
         try:
-            data=json.loads(request.body)
-            email_condition = '^([a-z0-9_\.-]+)@([\da-z\.-]+)\.([a-z\.]{2,6})$'
+            data             = json.loads(request.body)
+            email_condition  = '^([a-z0-9_\.-]+)@([\da-z\.-]+)\.([a-z\.]{2,6})$'
             passwd_condition = '^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9]).{8,}$'
 
         # 이메일 패스워드 조건
@@ -29,15 +29,15 @@ class UsersView(View):
                 return JsonResponse({"message": "EMAIL_ERROR"}, status=400)
             elif re.match(passwd_condition, data["passwd"]) is None:
                 return JsonResponse({"message": "PW_ERROR"}, status=400)
-            # elif data["email"] in User.objects.all("email"):
+            # elif data["email"] in User.objects.get("email"):
             #     return JsonResponse({"message": "EMAIL_ERROR"}, status=400)
-        except Exception:
+        except:
             return JsonResponse({"message": "KEY_ERROR"}, status=400)
         else:
             User.objects.create(
-            name=data["name"],
-            email=data["email"],
-            passwd=data["passwd"],
-            phone=data["phone"],
+            name   = data["name"],
+            email  = data["email"],
+            passwd = data["passwd"],
+            phone  = data["phone"],
             )
             return JsonResponse({"message": "Success"}, status = 201)
