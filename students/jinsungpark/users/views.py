@@ -13,7 +13,7 @@ from .models import User
 
 
 # Create your views here.
-class UsersView(View):
+class SignUpView(View):
     def post(self, request):
         try:
             data             = json.loads(request.body)
@@ -24,13 +24,13 @@ class UsersView(View):
                 return JsonResponse({"message": "EMAIL_ERROR"}, status=400)
             elif re.match(passwd_condition, data["passwd"]) is None:
                 return JsonResponse({"message": "PW_ERROR"}, status=400)
-        except:
+        except Exception:
             return JsonResponse({"message": "KEY_ERROR"}, status=400)
         else:
             User.objects.create(
-            name   = data["name"],
-            email  = data["email"],
-            passwd = data["passwd"],
-            phone  = data["phone"],
+            name     = data["name"],
+            email    = data["email"],
+            password = data["passwd"],
+            phone    = data["phone"],
             )
             return JsonResponse({"message": "Success"}, status = 201)
