@@ -9,33 +9,34 @@ from users.models     import User
 class UsersView(View):
     def post(self, request):
         data       = json.loads(request.body)
-        email_list = User.objects.all()
         email      = data["email"]
         password   = data["password"]
-
-        
+        user       = User()
         try:
-            email_validation    = re.compile('^[a-zA-Z0-9+-_.]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$')
-            if not email_validation.match(email):
-                raise Exception   #({"MESSAGE":"KEY_ERROR"})
-        except Exception:
-            return JsonResponse({"email_MESSAGE":"KEY_ERROR"}, status = 400)
+            try:
+                email_validation    = re.compile('^[a-zA-Z0-9+-_.]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$')
+                if not email_validation.match(email):
+                    raise Exception   #({"MESSAGE":"KEY_ERROR"})
+            except Exception:
+                return JsonResponse({"email_MESSAGE":"KEY_ERROR"}, status = 400)
             
-        try:
-            password_validation = re.compile('(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[!@#$%*^&+=])([a-zA-Z0-9!@#$%*^&+=]{8,})')
-            if not password_validation.match(password):
-                raise Exception   #({"MESSAGE":"KEY_ERROR"})
-        except Exception:
-            return JsonResponse({"password_MESSAGE":"KEY_ERROR"}, status = 400)
+            try:
+                password_validation = re.compile('(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[!@#$%*^&+=])([a-zA-Z0-9!@#$%*^&+=]{8,})')
+                if not password_validation.match(password):
+                    raise Exception   #({"MESSAGE":"KEY_ERROR"})
+            except Exception:
+                return JsonResponse({"password_MESSAGE":"KEY_ERROR"}, status = 400)
         
-        else:
-            User.objects.create(
-                name     = data["name"],
-                email    = data["email"],
-                password = data["password"],
-                contact  = data["contact"],
-            )
-    
-
+            else:
+                User.objects.create(
+                    name     = data["name"],
+                    email    = data["email"],
+                    password = data["password"],
+                    contact  = data["contact"],
+                )
+            user.full_clean()
+        except:
+            return JsonResponse({"user_MESSAGE":"KEY_ERROR"}, status = 400)
+        
         return JsonResponse({"MESSAGE" : "SUCCESS"}, status = 201)
      
