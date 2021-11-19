@@ -15,6 +15,7 @@ from pathlib            import Path
 
 from my_settings        import DATABASES, SECRET_KEY
 
+pymysql.install_as_MySQLdb()   
 
 DATABASES  = DATABASES
 SECRET_KEY = SECRET_KEY
@@ -45,6 +46,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'corsheaders',
+    'users',
 
 ]
 
