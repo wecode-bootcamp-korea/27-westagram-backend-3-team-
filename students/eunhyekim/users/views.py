@@ -16,14 +16,12 @@ class SignUpView(View):
             email      = data["email"]
             password   = data["password"]
 
-            email_validation    = re.compile('^[a-zA-Z0-9+-_.]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$')
-            password_validation = re.compile('(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[!@#$%*^&+=])([a-zA-Z0-9!@#$%*^&+=]{8,})')
+            email_validation    = '^[a-zA-Z0-9+-_.]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$'
+            password_validation = '(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[!@#$%*^&+=])([a-zA-Z0-9!@#$%*^&+=]{8,})'
             
-            if not email_validation.match(email):
-                return JsonResponse({"MESSAGE":"email_ERROR"}, status = 400) 
-            
-            if not password_validation.match(password):
-                return JsonResponse({"MESSAGE":"password_ERROR"}, status = 400)
+            if not re.match(email_validation, email) or not re.match(password_validation, password):
+                return JsonResponse({"MESSAGE":"Validation Error"}, status = 400)
+        
                 
             User.objects.create(
                 name     = data["name"],
@@ -35,7 +33,7 @@ class SignUpView(View):
             return JsonResponse({"MESSAGE":"SUCCESS"}, status = 201)
         
         except IntegrityError:
-            return JsonResponse({"user_MESSAGE":"user_ERROR"}, status = 400)
+            return JsonResponse({"MESSAGE":"REGISTERED_USER"}, status = 400)
 
         except KeyError:
             return JsonResponse({"MESSAGE":"KEY_ERROR"}, status = 400)
