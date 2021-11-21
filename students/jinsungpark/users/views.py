@@ -1,5 +1,6 @@
 from django.core.checks.messages import Error
 from django.db.models.fields import EmailField
+from django.db.models.query_utils import InvalidQuery
 from django.shortcuts import render
 from django.db import IntegrityError
 
@@ -25,15 +26,19 @@ class SignUpView(View):
                 return JsonResponse({"message": "EMAIL_ERROR"}, status=400)
             elif re.match(passwd_condition, data["password"]) is None:
                 return JsonResponse({"message": "PW_ERROR"}, status=400)
-            else:
-                User.objects.create(
+            elif User.objects.filter(email=data['email']).exists():
+                return JsonResponse({"result" : "INVALID_USER"}, status=401) 
+
+            User.objects.create(
                 name     = data["name"],
                 email    = data["email"],
                 passwd   = data["password"],
                 phone    = data["phone"],
                 )
-                return JsonResponse({"message": "Success"}, status = 201)
+            return JsonResponse({"message": "Success"}, status = 201)
         except KeyError:
             return JsonResponse({"message": "KEY_ERROR"}, status=400)
         except IntegrityError:
             return JsonResponse({"message": "EMAIL_ERROR"}, status=400)
+
+
