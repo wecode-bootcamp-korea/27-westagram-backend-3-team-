@@ -1,5 +1,4 @@
-import json
-import re
+import json, re
 
 from django.http      import JsonResponse
 from django.views     import View
@@ -19,8 +18,12 @@ class SignUpView(View):
             email_validation    = '^[a-zA-Z0-9+-_.]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$'
             password_validation = '(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[!@#$%*^&+=])([a-zA-Z0-9!@#$%*^&+=]{8,})'
             
+
             if not re.match(email_validation, email) or not re.match(password_validation, password):
                 return JsonResponse({"MESSAGE":"Validation Error"}, status = 400)
+
+            if User.objects.filter(email = email).exists():
+                return JsonResponse({"MESSAGE":"REGISTERED_ERROR"}, status = 400)
         
                 
             User.objects.create(
@@ -31,9 +34,6 @@ class SignUpView(View):
             )
 
             return JsonResponse({"MESSAGE":"SUCCESS"}, status = 201)
-        
-        except IntegrityError:
-            return JsonResponse({"MESSAGE":"REGISTERED_USER"}, status = 400)
 
         except KeyError:
             return JsonResponse({"MESSAGE":"KEY_ERROR"}, status = 400)
