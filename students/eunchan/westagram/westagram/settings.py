@@ -16,7 +16,6 @@ import pymysql
 
 from my_settings    import DATABASES, SECRET_KEY
 
-
 # m1 맥북
 pymysql.install_as_MySQLdb()
 
