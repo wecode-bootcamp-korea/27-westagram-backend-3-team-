@@ -11,7 +11,7 @@ password_regexp = "^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&(){}\[\]])[A-Za-z\d@$!%*
 
 class SignupView(View):
     def post(self, request):
-
+        
         try:
             data         = json.loads(request.body) 
             name         = data["name"]
@@ -20,22 +20,22 @@ class SignupView(View):
             phone_number = data["phone_number"]
             information  = data.get("information","")
 
+            if Member.objects.filter(email=email).exists():
+                raise ValidationError("EMAIL DUPLICATE")
+
             if not re.match(email_regexp, email): 
-                return JsonResponse({'massage':"EMAIL_ERROR"}, status=400)
+                raise ValidationError("INVALID_EMAIL_ADDRESS")
 
             if not re.match(password_regexp , password):
-                return JsonResponse({'massage':"PASSWORD_ERROR"}, status=400)
+                raise ValidationError("INVALID_PASSWORD")
 
-            member = Member(
+            Member.objects.create(
                 name         = name,
                 email        = email,
                 password     = password,
                 phone_number = phone_number,
                 information  = information
             )
-            member.full_clean() 
-            member.save()
-
             return JsonResponse({'massage':"SUCCESS"}, status=201)
 
         except ValidationError :
@@ -43,6 +43,3 @@ class SignupView(View):
 
         except KeyError :
             return JsonResponse({'massage':"KEY_ERROR"}, status=400)
-
-
-
