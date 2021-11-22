@@ -5,7 +5,7 @@ from django.views               import View
 from django.core.exceptions     import ValidationError
 
 from users.models               import User
-from users.validation           import Validation
+from users.validation           import Validation_Email, Validation_Password
 
 
 class SignInView(View):
@@ -14,7 +14,7 @@ class SignInView(View):
             data     = json.loads(request.body)
             password = User.objects.get(email = data["email"]).password
             
-            if not data['password'] == password:
+            if data['password'] != password:
                 return JsonResponse({'message':'INVALID_USER'}, status = 400)
             return JsonResponse({'message':'SUCCESS'},status = 200)
         
@@ -35,7 +35,8 @@ class SignUpView(View):
             password = data["password"]
             contact  = data["contact"]
            
-            Validation(email, password)
+            Validation_Email(email)
+            Validation_Password(password)
             
             User.objects.create(
                 name     = name,
