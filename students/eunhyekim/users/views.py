@@ -9,10 +9,11 @@ class SignUpView(View):
     def post(self, request):
       
         try:
-            data       = json.loads(request.body)
-            email      = data["email"]
-            password   = data["password"]
-            contact    = data["contact"]
+            data     = json.loads(request.body)
+            name     = data["name"]
+            email    = data["email"]
+            password = data["password"]
+            contact  = data["contact"]
 
             email_validation    = '^[a-zA-Z0-9+-_.]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$'
             password_validation = '(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[!@#$%*^&+=])([a-zA-Z0-9!@#$%*^&+=]{8,})'
@@ -27,10 +28,10 @@ class SignUpView(View):
                 return JsonResponse({"MESSAGE":"User_Already_Exists"}, status = 400)  
             
             User.objects.create(
-                name     = data["name"],
-                email    = data["email"],
-                password = data["password"],
-                contact  = data["contact"],
+                name     = name,
+                email    = email,
+                password = password,
+                contact  = contact
             )
 
             return JsonResponse({"MESSAGE":"SUCCESS"}, status = 201)
