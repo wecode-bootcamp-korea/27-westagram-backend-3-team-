@@ -1,10 +1,5 @@
-from django.core.checks.messages import Error
-from django.db.models.fields import EmailField
-from django.db.models.query_utils import InvalidQuery
-from django.shortcuts import render
 from django.db import IntegrityError
 
-from django.http import request
 from django.http.response import JsonResponse
 
 import re
@@ -19,15 +14,17 @@ class SignUpView(View):
     def post(self, request):
         try:
             data             = json.loads(request.body)
-            email_condition  = '^([a-z0-9_\.-]+)@([\da-z\.-]+)\.([a-z\.]{2,6})$'
-            passwd_condition = '^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9]).{8,}$'
+            email_regex = '^([a-z0-9_\.-]+)@([\da-z\.-]+)\.([a-z\.]{2,6})$'
+            passwd_regex = '^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9]).{8,}$'
 
-            if re.match(email_condition, data["email"]) is None:
+            if re.match(email_regex, data["email"]) is None:
                 return JsonResponse({"message": "EMAIL_ERROR"}, status=400)
-            elif re.match(passwd_condition, data["password"]) is None:
+
+            if re.match(passwd_regex, data["password"]) is None:
                 return JsonResponse({"message": "PW_ERROR"}, status=400)
-            elif User.objects.filter(email=data['email']).exists():
-                return JsonResponse({"result" : "INVALID_USER"}, status=401) 
+
+            if User.objects.filter(email=data['email']).exists():
+                return JsonResponse({"message" : "INVALID_USER"}, status=401) 
 
             User.objects.create(
                 name     = data["name"],
