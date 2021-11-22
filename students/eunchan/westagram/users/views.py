@@ -18,7 +18,7 @@ class SignupView(View):
             email        = data["email"]
             password     = data["password"]
             phone_number = data["phone_number"]
-            information  = data.get("information","")
+            information  = data.get("information")
 
             if Member.objects.filter(email=email).exists():
                 raise ValidationError("EMAIL DUPLICATE")
