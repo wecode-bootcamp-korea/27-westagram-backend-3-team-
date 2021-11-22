@@ -1,12 +1,12 @@
-from django.db import IntegrityError
+from django.db            import IntegrityError
 
 from django.http.response import JsonResponse
 
 import re
 import json
 
-from django.views import View
-from .models import User
+from django.views         import View
+from .models              import User
 
 
 # Create your views here.
