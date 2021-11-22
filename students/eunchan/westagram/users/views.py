@@ -7,9 +7,6 @@ from django.core.exceptions import ValidationError
 from users.models           import Member
 from users.validations      import signup_check, login_check
 
-email_regexp    = "^[a-zA-Z0-9+-_.]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$"
-password_regexp = "^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&(){}\[\]])[A-Za-z\d@$!%*#?&(){}\[\]]{8,}$"
-
 class SignupView(View):
     def post(self, request):
         try:
