@@ -50,7 +50,7 @@ class LogInView(View):
             return JsonResponse({"result" : "SUCCESS"}, status=200)
 
         except User.DoesNotExist:
-              return JsonResponse({"result" : "KEY_ERROR"}, status=500)
+              return JsonResponse({"result" : "KEY_ERROR"}, status=401)
 
 
 
