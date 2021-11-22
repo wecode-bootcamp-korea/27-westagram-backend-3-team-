@@ -11,7 +11,6 @@ password_regexp = "^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&(){}\[\]])[A-Za-z\d@$!%*
 
 class SignupView(View):
     def post(self, request):
-        
         try:
             data         = json.loads(request.body) 
             name         = data["name"]
