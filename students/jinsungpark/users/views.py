@@ -52,12 +52,12 @@ class LogInView(View):
             user_info = User.objects.get(email=email)
 
             if user_info.passwd != data["password"]:
-                return JsonResponse({"result" : "KEY_ERROR"}, status=400)
+                raise User.DoesNotExist
 
             return JsonResponse({"result" : "SUCCESS"}, status=200)
 
         except User.DoesNotExist:
-              return JsonResponse({"result" : "DoesNotExist"}, status=500)
+              return JsonResponse({"result" : "INVALID_USER"}, status=500)
 
 
 
