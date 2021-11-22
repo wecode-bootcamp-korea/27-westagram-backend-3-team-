@@ -5,6 +5,7 @@ from django.views           import View
 from django.core.exceptions import ValidationError
 
 from users.models           import Member
+from users.validations      import signup_check, login_check
 
 email_regexp    = "^[a-zA-Z0-9+-_.]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$"
 password_regexp = "^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&(){}\[\]])[A-Za-z\d@$!%*#?&(){}\[\]]{8,}$"
@@ -19,14 +20,7 @@ class SignupView(View):
             phone_number = data["phone_number"]
             information  = data.get("information")
 
-            if Member.objects.filter(email=email).exists():
-                raise ValidationError("EMAIL DUPLICATE")
-
-            if not re.match(email_regexp, email): 
-                raise ValidationError("INVALID_EMAIL_ADDRESS")
-
-            if not re.match(password_regexp , password):
-                raise ValidationError("INVALID_PASSWORD")
+            signup_check(email, password)
 
             Member.objects.create(
                 name         = name,
@@ -37,8 +31,29 @@ class SignupView(View):
             )
             return JsonResponse({'massage':"SUCCESS"}, status=201)
 
+        except KeyError :
+            return JsonResponse({'massage':"KEY_ERROR"}, status=400)
+
         except ValidationError as e:
             return JsonResponse({'massage': e.message}, status=400)
 
+class LoginView(View):
+    def post(self, request):
+        try:
+            data         = json.loads(request.body) 
+            email        = data["email"]
+            password     = data["password"]			
+
+            login_check(email, password)
+						
+            return JsonResponse({'massage':"SUCCESS"}, status=200)
+        
         except KeyError :
             return JsonResponse({'massage':"KEY_ERROR"}, status=400)
+
+        except ValidationError as e :
+            return JsonResponse({'massage': e.message }, status=400)
+
+        except Member.DoesNotExist:
+            return JsonResponse({'massage': "INVALID_USER" }, status=401)
+
