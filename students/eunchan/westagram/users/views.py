@@ -38,8 +38,8 @@ class SignupView(View):
             )
             return JsonResponse({'massage':"SUCCESS"}, status=201)
 
-        except ValidationError :
-            return JsonResponse({'massage':"VALIDATION_ERROR"}, status=400)
+        except ValidationError as e:
+            return JsonResponse({'massage': e.message}, status=400)
 
         except KeyError :
             return JsonResponse({'massage':"KEY_ERROR"}, status=400)
