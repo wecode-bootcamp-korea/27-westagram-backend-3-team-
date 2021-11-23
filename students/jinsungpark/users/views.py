@@ -5,7 +5,7 @@ from django.views           import View
 from django.core.exceptions import ValidationError
 
 from .models                import User
-from .validation            import Signup_password, Signup_email
+from .validation            import signup_password, signup_email
 
 class SignUpView(View):
     def post(self, request):
@@ -16,9 +16,9 @@ class SignUpView(View):
             password     = data["password"]
             phone        = data["phone"]
 
-            Signup_email(email)
+            signup_email(email)
 
-            Signup_password(password)
+            signup_password(password)
 
             if User.objects.filter(email=email).exists():
                 return JsonResponse({"message" : "EMAIL_ALREADY_EXISTS"}, status=400)
