@@ -10,6 +10,7 @@ def Signup_email(email):
 
 def Signup_password(password):
     passwd_regex = '^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9]).{8,}$'
+    
     if not re.match(passwd_regex, password):
         raise ValidationError("PASSWORD_ERROR")
 
