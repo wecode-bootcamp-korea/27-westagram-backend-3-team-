@@ -5,19 +5,17 @@ from django.views               import View
 from django.core.exceptions     import ValidationError
 
 from users.models               import User
-from users.validation           import Validation_Email, Validation_Password, test
+from users.validation           import validation_email, validation_password
 
 
 class SignInView(View):
     def post(self, request):
         try:
-            data     = json.loads(request.body)
-            # password = User.objects.get(email = data["email"]).password
+            data = json.loads(request.body)
+            user = User.objects.get(email = data["email"])
             
-            email = User.objects.get(password = data["password"]).email
-
-            if not data['email'] == email:
-                return JsonResponse({'message':'INVALID_USER'}, status = 400)
+            if user.password != data['password']:
+                return JsonResponse({'message':'INVALID_USER'}, status = 401)
             return JsonResponse({'message':'SUCCESS'},status = 200)
         
         except User.DoesNotExist:
@@ -37,16 +35,17 @@ class SignUpView(View):
             password = data["password"]
             contact  = data["contact"]
            
-            # Validation_Email(email)
-            # Validation_Password(password)
+            validation_email(email)
+            validation_password(password)
             
-            # User.objects.create(
-            #     name     = name,
-            #     email    = email,
-            #     password = password,
-            #     contact  = contact
-            # )
-            test(email)
+            User.objects.create(
+                name     = name,
+                email    = email,
+                password = password,
+                contact  = contact
+            )
+            if User.objects.filter(email = email).exists():
+                return JsonResponse({"MESSAGE":"User_Already_Exists"}, status = 400)
 
             return JsonResponse({"MESSAGE":"SUCCESS"}, status = 201)
         
