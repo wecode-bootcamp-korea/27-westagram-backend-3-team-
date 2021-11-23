@@ -45,7 +45,7 @@ class LogInView(View):
             email     = data["email"]
             password  = data["password"]
 
-            if not User.objects.get(email=email).exists():
+            if not User.objects.filter(email=email).exists():
                 raise ValidationError("INVALID_USER")
 
             if User.objects.passwd != password:
