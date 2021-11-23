@@ -1,9 +1,11 @@
-import re, json
+import json
 
 from django.http.response   import JsonResponse
 from django.views           import View
+from django.core.exceptions import ValidationError
 
 from .models                import User
+from .validation            import signup_password, signup_email
 
 class SignUpView(View):
     def post(self, request):
@@ -13,17 +15,13 @@ class SignUpView(View):
             email        = data['email']
             password     = data["password"]
             phone        = data["phone"]
-            email_regex  = '^([a-z0-9_\.-]+)@([\da-z\.-]+)\.([a-z\.]{2,6})$'
-            passwd_regex = '^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9]).{8,}$'
+
+            signup_email(email)
+
+            signup_password(password)
 
             if User.objects.filter(email=email).exists():
                 return JsonResponse({"message" : "EMAIL_ALREADY_EXISTS"}, status=400)
-
-            if not re.match(email_regex, email):
-                return JsonResponse({"message": "EMAIL_ERROR"}, status=400)
-
-            if not re.match(passwd_regex, password):
-                return JsonResponse({"message": "PASSWORD_ERROR"}, status=400)
 
             User.objects.create(
                 name     = name,
@@ -31,10 +29,26 @@ class SignUpView(View):
                 passwd   = password,
                 phone    = phone
                 )
+
             return JsonResponse({"message": "Success"}, status = 201)
         
         except KeyError:
             return JsonResponse({"message": "KEY_ERROR"}, status=400)
 
+        except ValidationError as e:
+            return JsonResponse({"message": e.message}, status=400)
 
+class LogInView(View):
+    def post(self, request):
+        try:
+            data      = json.loads(request.body)
+            email     = data["email"]
+            password  = data["password"]
 
+            if not User.objects.filter(email=email, password=password).exists():
+                return JsonResponse({"message":"INVALID_USER"}, status=400)
+
+            return JsonResponse({"message" : "SUCCESS"}, status=200)
+
+        except KeyError:
+              return JsonResponse({"message" : "KEY_ERROR"}, status=400)
