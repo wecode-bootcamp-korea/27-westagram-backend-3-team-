@@ -16,7 +16,8 @@ class SignupView(View):
             password     = data["password"]
             phone_number = data["phone_number"]
             information  = data.get("information")
-            hashed_password = bcrypt.hashpw(password.encode('utf-8'),bcrypt.gensalt())
+            encoded_password = bcrypt.hashpw(password.encode('utf-8'),bcrypt.gensalt())
+            decoded_password = encoded_password.decode('utf-8')
 
             email_regexp_check(email)
             password_regexp_check(password)
@@ -27,7 +28,7 @@ class SignupView(View):
             Member.objects.create(
                 name         = name,
                 email        = email,
-                password     = hashed_password.decode(),
+                password     = decoded_password,
                 phone_number = phone_number,
                 information  = information
             )
