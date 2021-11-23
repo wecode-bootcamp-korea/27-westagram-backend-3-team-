@@ -12,9 +12,8 @@ class SignInView(View):
     def post(self, request):
         try:
             data = json.loads(request.body)
-            user = User.objects.get(email = data["email"])
             
-            if user.password != data['password']:
+            if not User.objects.filter(email = data["email"], password = data["password"]).exists():
                 return JsonResponse({'message':'INVALID_USER'}, status = 401)
             return JsonResponse({'message':'SUCCESS'},status = 200)
         
@@ -38,14 +37,15 @@ class SignUpView(View):
             validation_email(email)
             validation_password(password)
             
+            if User.objects.filter(email = email).exists():
+                return JsonResponse({"MESSAGE":"User_Already_Exists"}, status = 400)
+
             User.objects.create(
                 name     = name,
                 email    = email,
                 password = password,
                 contact  = contact
             )
-            if User.objects.filter(email = email).exists():
-                return JsonResponse({"MESSAGE":"User_Already_Exists"}, status = 400)
 
             return JsonResponse({"MESSAGE":"SUCCESS"}, status = 201)
         
