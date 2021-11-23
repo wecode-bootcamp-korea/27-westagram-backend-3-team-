@@ -5,7 +5,7 @@ from django.views           import View
 from django.core.exceptions import ValidationError
 
 from .models                import User
-from .validation            import Log_in,Signup_password, Signup_email
+from .validation            import Signup_password, Signup_email
 
 class SignUpView(View):
     def post(self, request):
@@ -19,6 +19,9 @@ class SignUpView(View):
             Signup_email(email)
 
             Signup_password(password)
+
+            if User.objects.filter(email=email).exists():
+                raise ValidationError("EMAIL_ALREADY_EXISTS")
 
             User.objects.create(
                 name     = name,
@@ -41,7 +44,11 @@ class LogInView(View):
             email     = data["email"]
             password  = data["password"]
 
-            Log_in(email, password)
+            if User.objects.get(email=email).exists():
+                raise ValidationError("INVALID_USER")
+
+            if User.objects.passwd != password:
+                raise ValidationError('INVALID_USER')
 
             return JsonResponse({"message" : "SUCCESS"}, status=200)
 
