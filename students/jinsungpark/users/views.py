@@ -21,7 +21,7 @@ class SignUpView(View):
             Signup_password(password)
 
             if User.objects.filter(email=email).exists():
-                raise ValidationError("EMAIL_ALREADY_EXISTS")
+                return JsonResponse({"message" : "EMAIL_ALREADY_EXISTS"}, status=400)
 
             User.objects.create(
                 name     = name,
