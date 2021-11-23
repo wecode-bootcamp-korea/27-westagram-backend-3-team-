@@ -1,11 +1,11 @@
-import json, re
+import json
 
 from django.http            import JsonResponse
 from django.views           import View
 from django.core.exceptions import ValidationError
 
 from users.models           import Member
-from users.validations      import signup_check, login_check
+from users.validations      import email_regexp_check, password_regexp_check, email_duplicate_check, password_match_check
 
 class SignupView(View):
     def post(self, request):
@@ -17,7 +17,9 @@ class SignupView(View):
             phone_number = data["phone_number"]
             information  = data.get("information")
 
-            signup_check(email, password)
+            email_regexp_check(email)
+            password_regexp_check(password)
+            email_duplicate_check(email)
 
             Member.objects.create(
                 name         = name,
@@ -39,9 +41,11 @@ class LoginView(View):
         try:
             data         = json.loads(request.body) 
             email        = data["email"]
-            password     = data["password"]			
-
-            login_check(email, password)
+            password     = data["password"]	
+        
+            email_regexp_check(email)
+            password_regexp_check(password)
+            password_match_check(email, password)
 						
             return JsonResponse({'massage':"SUCCESS"}, status=200)
         
