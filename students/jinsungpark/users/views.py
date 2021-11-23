@@ -5,7 +5,7 @@ from django.views           import View
 from django.core.exceptions import ValidationError
 
 from .models                import User
-from .validation                 import Log_in,Signup_password, Signup_email
+from .validation            import Log_in,Signup_password, Signup_email
 
 class SignUpView(View):
     def post(self, request):
