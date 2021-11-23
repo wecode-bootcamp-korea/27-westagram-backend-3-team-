@@ -1,13 +1,11 @@
-import json, re
+import json
 
 from django.http            import JsonResponse
 from django.views           import View
 from django.core.exceptions import ValidationError
 
 from users.models           import Member
-
-email_regexp    = "^[a-zA-Z0-9+-_.]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$"
-password_regexp = "^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&(){}\[\]])[A-Za-z\d@$!%*#?&(){}\[\]]{8,}$"
+from users.validations      import email_regexp_check, password_regexp_check
 
 class SignupView(View):
     def post(self, request):
@@ -19,14 +17,11 @@ class SignupView(View):
             phone_number = data["phone_number"]
             information  = data.get("information")
 
+            email_regexp_check(email)
+            password_regexp_check(password)
+
             if Member.objects.filter(email=email).exists():
                 raise ValidationError("EMAIL DUPLICATE")
-
-            if not re.match(email_regexp, email): 
-                raise ValidationError("INVALID_EMAIL_ADDRESS")
-
-            if not re.match(password_regexp , password):
-                raise ValidationError("INVALID_PASSWORD")
 
             Member.objects.create(
                 name         = name,
@@ -37,8 +32,23 @@ class SignupView(View):
             )
             return JsonResponse({'massage':"SUCCESS"}, status=201)
 
+        except KeyError :
+            return JsonResponse({'massage':"KEY_ERROR"}, status=400)
+
         except ValidationError as e:
             return JsonResponse({'massage': e.message}, status=400)
 
+class LoginView(View):
+    def post(self, request):
+        try:
+            data         = json.loads(request.body) 
+            email        = data["email"]
+            password     = data["password"]	
+        
+            if not Member.objects.filter(email=email, password=password).exists():
+                return JsonResponse({'massage': "INVALID_USER" }, status=401)
+            
+            return JsonResponse({'massage':"SUCCESS"}, status=200)
+        
         except KeyError :
             return JsonResponse({'massage':"KEY_ERROR"}, status=400)
