@@ -2,8 +2,6 @@ import re
 
 from django.core.exceptions import ValidationError
 
-from users.models           import Member
-
 def email_regexp_check(email):
     email_regexp    = "^[a-zA-Z0-9+-_.]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$"
     if not re.match(email_regexp, email): 
