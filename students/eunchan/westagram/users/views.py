@@ -5,7 +5,7 @@ from django.views           import View
 from django.core.exceptions import ValidationError
 
 from users.models           import Member
-from users.validations      import email_regexp_check, password_regexp_check, email_duplicate_check, password_match_check
+from users.validations      import email_regexp_check, password_regexp_check
 
 class SignupView(View):
     def post(self, request):
@@ -19,7 +19,9 @@ class SignupView(View):
 
             email_regexp_check(email)
             password_regexp_check(password)
-            email_duplicate_check(email)
+
+            if Member.objects.filter(email=email).exists():
+                raise ValidationError("EMAIL DUPLICATE")
 
             Member.objects.create(
                 name         = name,
@@ -45,8 +47,10 @@ class LoginView(View):
         
             email_regexp_check(email)
             password_regexp_check(password)
-            password_match_check(email, password)
-						
+
+            if Member.objects.get(email=email).password != password:
+                raise Member.DoesNotExist		
+
             return JsonResponse({'massage':"SUCCESS"}, status=200)
         
         except KeyError :
