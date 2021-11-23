@@ -45,18 +45,10 @@ class LoginView(View):
             email        = data["email"]
             password     = data["password"]	
         
-            email_regexp_check(email)
-            password_regexp_check(password)
-
-            if Member.objects.get(email=email, password=password):
-                return JsonResponse({'massage':"SUCCESS"}, status=200)
+            if not Member.objects.filter(email=email, password=password).exists():
+                return JsonResponse({'massage': "INVALID_USER" }, status=401)
+            
+            return JsonResponse({'massage':"SUCCESS"}, status=200)
         
         except KeyError :
             return JsonResponse({'massage':"KEY_ERROR"}, status=400)
-
-        except ValidationError as e :
-            return JsonResponse({'massage': e.message }, status=400)
-
-        except Member.DoesNotExist:
-            return JsonResponse({'massage': "INVALID_USER" }, status=401)
-
