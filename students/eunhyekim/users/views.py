@@ -6,19 +6,20 @@ from django.core.exceptions     import ValidationError
 
 from users.models               import User
 from users.validation           import validation_email, validation_password
+from my_settings                import SECRET_KEY, ALGORITHM
 
 
 class SignInView(View):
     def post(self, request):
         try:
             data     = json.loads(request.body)
-            password = User.objects.get(email = data["email"]).password 
-            user_id  = User.objects.get(email = data["email"]).id 
+            user     = User.objects.get(email = data["email"])
         
-            if bcrypt.checkpw(data['password'].encode('utf-8'), password.encode('utf-8')) == True:
-                access_token = jwt.encode({'id':user_id}, 'secret', algorithm = 'HS256')
+            if bcrypt.checkpw(data['password'].encode('utf-8'), user.password.encode('utf-8')):
+                access_token = jwt.encode({'id':user.id}, SECRET_KEY, algorithm = ALGORITHM)
           
                 return JsonResponse({'TOKEN': access_token}, status = 200)
+
             return JsonResponse({'MESSAGE':"UNAUTHORIZED"}, status = 401) 
 
         except User.DoesNotExist:
