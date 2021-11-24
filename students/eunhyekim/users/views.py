@@ -7,7 +7,7 @@ from django.core.exceptions     import ValidationError
 from users.models               import User
 from users.validation           import validation_email, validation_password
 from my_settings                import SECRET_KEY, ALGORITHM
-from users.token_deco                 import deco_token
+from users.token_deco           import deco_token
 
 
 class SignInView(View):

@@ -8,7 +8,7 @@ from users.views                import *
 from my_settings                import SECRET_KEY, ALGORITHM
 
 def deco_token(func):
-    def access_tk(self, request):
+    def access_tk(self, request, *args, **kwargs):
         try:
             data     = json.loads(request.body)
             user     = User.objects.get(email = data["email"])
