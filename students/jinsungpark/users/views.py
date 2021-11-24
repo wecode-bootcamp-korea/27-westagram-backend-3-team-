@@ -28,7 +28,7 @@ class SignUpView(View):
             User.objects.create(
                 name     = name,
                 email    = email,
-                passwd   = hashed_password,
+                password = hashed_password,
                 phone    = phone
                 )
 
@@ -48,7 +48,7 @@ class LogInView(View):
             password  = data["password"]
 
             if not User.objects.filter(email=email, password=password).exists():
-                return JsonResponse({"message":"INVALID_USER"}, status=400)
+                return JsonResponse({"message":"INVALID_USER"}, status=401)
 
             return JsonResponse({"message" : "SUCCESS"}, status=200)
 
