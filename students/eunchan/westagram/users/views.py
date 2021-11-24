@@ -1,9 +1,10 @@
-import json, bcrypt
+import json, bcrypt, jwt
 
 from django.http            import JsonResponse
 from django.views           import View
 from django.core.exceptions import ValidationError
 
+from my_settings            import SECRET_KEY 
 from users.models           import Member
 from users.validations      import email_regexp_check, password_regexp_check
 
@@ -43,14 +44,19 @@ class SignupView(View):
 class LoginView(View):
     def post(self, request):
         try:
-            data         = json.loads(request.body) 
-            email        = data["email"]
-            password     = data["password"]	
-        
-            if not Member.objects.filter(email=email, password=password).exists():
-                return JsonResponse({'massage': "INVALID_USER" }, status=401)
+            data       = json.loads(request.body) 
+            email      = data["email"]
+            password   = data["password"]	
+            account    = Member.objects.get(email=email)
             
-            return JsonResponse({'massage':"SUCCESS"}, status=200)
-        
+            if not bcrypt.checkpw(password.encode('utf-8'),account.password.encode('utf-8')):
+                raise Member.DoesNotExist
+
+            access_token = jwt.encode({'id' : account.id}, SECRET_KEY, algorithm = 'HS256')
+            return JsonResponse({'token':access_token}, status=200)
+
+        except Member.DoesNotExist :
+            return JsonResponse({'massage':"INVALID_USER"}, status=401)
+
         except KeyError :
             return JsonResponse({'massage':"KEY_ERROR"}, status=400)
