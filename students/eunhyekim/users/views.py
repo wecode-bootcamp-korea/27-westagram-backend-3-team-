@@ -7,26 +7,30 @@ from django.core.exceptions     import ValidationError
 from users.models               import User
 from users.validation           import validation_email, validation_password
 from my_settings                import SECRET_KEY, ALGORITHM
+from users.token_deco                 import deco_token
 
 
 class SignInView(View):
+    @deco_token
     def post(self, request):
-        try:
-            data     = json.loads(request.body)
-            user     = User.objects.get(email = data["email"])
+        # try:
+        #     data     = json.loads(request.body)
+        #     user     = User.objects.get(email = data["email"])
         
-            if bcrypt.checkpw(data['password'].encode('utf-8'), user.password.encode('utf-8')):
-                access_token = jwt.encode({'id':user.id}, SECRET_KEY, algorithm = ALGORITHM)
+        #     if bcrypt.checkpw(data['password'].encode('utf-8'), user.password.encode('utf-8')):
+        #         access_token = jwt.encode({'id':user.id}, SECRET_KEY, algorithm = ALGORITHM)
           
-                return JsonResponse({'TOKEN': access_token}, status = 200)
+        #         return JsonResponse({'TOKEN': access_token}, status = 200)
 
-            return JsonResponse({'MESSAGE':"UNAUTHORIZED"}, status = 401) 
+        #     return JsonResponse({'MESSAGE':"UNAUTHORIZED"}, status = 401) 
 
-        except User.DoesNotExist:
-            return JsonResponse({'MESSAGE':'INVALID_USER'}, status = 401)
+        # except User.DoesNotExist:
+        #     return JsonResponse({'MESSAGE':'INVALID_USER'}, status = 401)
 
-        except KeyError:
-            return JsonResponse({'MESSAGE' :'KEY_ERROR'}, status = 400)
+        # except KeyError:
+        #     return JsonResponse({'MESSAGE' :'KEY_ERROR'}, status = 400)
+
+        return JsonResponse({"MESSAGE" : 'READY'}, status = 200)
 
 
 class SignUpView(View):
