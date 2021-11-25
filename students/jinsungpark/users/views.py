@@ -47,12 +47,13 @@ class LogInView(View):
         try:
             data  = json.loads(request.body)         
             user  = User.objects.get(email=data["email"])
-            if bcrypt.checkpw(data["password"].encode('utf-8'), user.password.encode('utf-8')):
-                access_token = jwt.encode({'id' : user.id}, SECRET_KEY, algorithm=ALGORITHM)
-
-                return JsonResponse({"message" : access_token}, status=200)    
+            if not bcrypt.checkpw(data["password"].encode('utf-8'), user.password.encode('utf-8')):
                 
-            return JsonResponse({"message" : "UNAUTHORIZATION"}, status=401)
+                return JsonResponse({"message" : "invalid_password"}, stauts=401)
+            
+            access_token = jwt.encode({'id' : user.id}, SECRET_KEY, algorithm=ALGORITHM)
+
+            return JsonResponse({"message" : access_token}, status=200)    
 
         except KeyError:
             return JsonResponse({"message" : "KEY_ERROR"}, status=400)
