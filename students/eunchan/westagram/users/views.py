@@ -52,7 +52,6 @@ class LoginView(View):
             if bcrypt.checkpw(password.encode('utf-8'),account.password.encode('utf-8')):
                 access_token = jwt.encode({'id' : account.id}, SECRET_KEY, algorithm = ALGORITHM)
                 return JsonResponse({'massage':"SUCCESS",'token':access_token}, status=200)
-            raise Member.DoesNotExist
 
         except Member.DoesNotExist :
             return JsonResponse({'massage':"INVALID_USER"}, status=401)
