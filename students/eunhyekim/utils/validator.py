@@ -14,3 +14,10 @@ def validation_password(password):
     if not re.match(password_validation, password):
         raise ValidationError("PassWord_Invalidation")
 
+
+def validation_url(image):
+    url_validation='^http[s]*:\/\/(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z0-9][a-z0-9-]{0,61}[a-z0-9][a-zA-Z0-9-_/.?=]*'
+
+    if not re.match(url_validation, image):
+        raise ValidationError("Url_Invalidation")
+

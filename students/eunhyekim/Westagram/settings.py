@@ -9,16 +9,32 @@ https://docs.djangoproject.com/en/3.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.2/ref/settings/
 """
-import pymysql
+import pymysql, os
 
 from pathlib            import Path
 
-from my_settings        import DATABASES, SECRET_KEY
+# from my_settings        import DATABASES, SECRET_KEY
 
 pymysql.install_as_MySQLdb()   
 
-DATABASES  = DATABASES
-SECRET_KEY = SECRET_KEY
+# DATABASES  = DATABASES
+SECRET_KEY    = os.environ["SECRET_KEY"]
+ALGORITHM     = os.environ["ALGORITHM"]
+ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", ["*"])
+
+DATABASES = {
+    'default' : {
+        'ENGINE'  : 'django.db.backends.mysql',
+        'NAME'    : os.environ.get('DB_NAME'),
+        'USER'    : os.environ.get('DB_USER'),
+        'PASSWORD': os.environ.get('DB_PASSWORD'),
+        'HOST'    : os.environ.get('DB_HOST'),
+        'PORT'    : os.environ.get('DB_PORT'),
+        'OPTIONS': {
+            'charset': 'utf8mb4',
+        }
+    }
+}
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -29,11 +45,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
 # SECRET_KEY = 'django-insecure-mnf!fyh775xt%r)xendprbb(4d0de-o05pe-&=lc50@c98_(6t'
-
+SECRET_KEY = SECRET_KEY
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*']
+# ALLOWED_HOSTS = ['*']
 
 APPEND_SLASH = False
 
@@ -49,7 +65,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'users',
     'posting',
-
+    'core',
 ]
 
 MIDDLEWARE = [
@@ -119,13 +135,13 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Seoul'
 
 USE_I18N = True
 
 USE_L10N = True
 
-USE_TZ = True
+USE_TZ = False
 
 
 # Static files (CSS, JavaScript, Images)
@@ -161,3 +177,28 @@ CORS_ALLOW_HEADERS = (
  'x-csrftoken',
  'x-requested-with',
 )
+
+LOGGING = {
+    'disable_existing_loggers' : False,
+    'version' : 1,
+    'formatters': {
+        'verbose': {
+            'format':'{asctime} {levelname} {message}',
+            'style': '{'
+        },
+    },                                
+    'handlers': {
+        'console': {
+            'class'    : 'logging.StreamHandler',
+            'formatter': 'verbose',
+            'level'    : 'DEBUG',
+        },
+    },
+    'loggers': {
+        'django.db.backends': {
+            'handlers':['console'],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
+    },
+}
